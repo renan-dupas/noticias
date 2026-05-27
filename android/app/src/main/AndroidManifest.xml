@@ -2,7 +2,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:label="leitornoticias_temp"
+        android:label="Noticias"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

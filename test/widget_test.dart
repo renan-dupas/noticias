@@ -41,7 +41,6 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Leitor de Noticias'), findsOneWidget);
     expect(find.text('Noticia de teste'), findsOneWidget);
     expect(find.textContaining('Fonte Teste'), findsOneWidget);
     expect(fakeRepository.lastLanguage, NewsLanguage.ptBr);

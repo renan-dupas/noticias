@@ -21,7 +21,7 @@ class NewsReaderApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Leitor de Noticias',
+      title: 'Noticias',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
@@ -175,7 +175,7 @@ class MultiSourceNewsRepository implements NewsRepository {
   static const Duration _cacheTtl = Duration(minutes: 2);
   static const Map<String, String> _requestHeaders = <String, String>{
     'User-Agent':
-        'Mozilla/5.0 (compatible; LeitorNoticias/1.0; +https://example.local)',
+        'Mozilla/5.0 (compatible; NoticiasApp/1.0; +https://example.local)',
     'Accept': 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
   };
 
@@ -644,8 +644,6 @@ class NewsController extends ChangeNotifier {
   final List<NewsArticle> _visibleArticles = <NewsArticle>[];
   final Map<NewsLanguage, Set<String>> _disabledSourceUrlsByLanguage =
       <NewsLanguage, Set<String>>{};
-  String _query = '';
-  Timer? _debounce;
 
   UnmodifiableListView<NewsArticle> get visibleArticles =>
       UnmodifiableListView<NewsArticle>(_visibleArticles);
@@ -660,7 +658,7 @@ class NewsController extends ChangeNotifier {
       currentSources.where((NewsFeedSource source) => isSourceEnabled(source)).length;
   List<NewsTopic> get availableTopics => NewsTopic.values;
   UnmodifiableListView<NewsArticle> get highlightArticles {
-    final ranked = List<NewsArticle>.from(_filteredByTopicAndQuery)
+    final ranked = List<NewsArticle>.from(_filteredByTopic)
       ..sort(
         (NewsArticle a, NewsArticle b) =>
             _importanceScore(b).compareTo(_importanceScore(a)),
@@ -744,15 +742,6 @@ class NewsController extends ChangeNotifier {
     }
   }
 
-  void setQuery(String query) {
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 220), () {
-      _query = query.trim().toLowerCase();
-      _resetVisible();
-      notifyListeners();
-    });
-  }
-
   Future<void> setLanguage(NewsLanguage nextLanguage) async {
     if (nextLanguage == language) return;
     language = nextLanguage;
@@ -784,7 +773,7 @@ class NewsController extends ChangeNotifier {
   }
 
   List<NewsArticle> get _processedArticles {
-    final filtered = List<NewsArticle>.from(_filteredByTopicAndQuery);
+    final filtered = List<NewsArticle>.from(_filteredByTopic);
 
     switch (sortOption) {
       case NewsSortOption.newestFirst:
@@ -809,19 +798,12 @@ class NewsController extends ChangeNotifier {
     return filtered;
   }
 
-  List<NewsArticle> get _filteredByTopicAndQuery {
-    final queryFiltered = _query.isEmpty
-        ? List<NewsArticle>.from(_allArticles)
-        : _allArticles.where((NewsArticle article) {
-      final haystack = '${article.title} ${article.source} ${article.domain}'.toLowerCase();
-      return haystack.contains(_query);
-    }).toList(growable: false);
-
+  List<NewsArticle> get _filteredByTopic {
     if (topic == NewsTopic.all) {
-      return queryFiltered;
+      return List<NewsArticle>.from(_allArticles);
     }
 
-    return queryFiltered.where((NewsArticle article) {
+    return _allArticles.where((NewsArticle article) {
       final text = '${article.title} ${article.summary ?? ''}'.toLowerCase();
       return topic.keywords.any((String keyword) => _matchesTopicKeyword(text, keyword));
     }).toList(growable: false);
@@ -882,7 +864,6 @@ class NewsController extends ChangeNotifier {
 
   @override
   void dispose() {
-    _debounce?.cancel();
     super.dispose();
   }
 }
@@ -926,7 +907,6 @@ class _NewsHomePageState extends State<NewsHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Leitor de Noticias'),
         actions: <Widget>[
           AnimatedBuilder(
             animation: _controller,
@@ -1004,25 +984,6 @@ class _NewsHomePageState extends State<NewsHomePage> {
             },
           ),
         ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(58),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-            child: TextField(
-              onChanged: _controller.setQuery,
-              decoration: InputDecoration(
-                hintText: 'Buscar por titulo, fonte ou dominio',
-                prefixIcon: const Icon(Icons.search),
-                filled: true,
-                fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-          ),
-        ),
       ),
       body: AnimatedBuilder(
         animation: _controller,

@@ -1,11 +1,11 @@
 {
-    "name": "leitornoticias_temp",
-    "short_name": "leitornoticias_temp",
+    "name": "Noticias",
+    "short_name": "Noticias",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Aplicativo simples para leitura de noticias.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

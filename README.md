@@ -1,44 +1,32 @@
-# Leitor de Noticias (Flutter)
+# Notícias
 
-Aplicativo Flutter de leitura de noticias com foco em desempenho e UX.
+Aplicativo Flutter simples para leitura de notícias via feeds RSS.
 
-## O que foi otimizado
+## Requisitos
 
-- Cache em memoria com TTL para evitar requisicoes repetidas.
-- Parse de JSON em isolate (`compute`) para reduzir travamentos de UI.
-- Paginacao incremental (lazy loading) na lista.
-- Busca local com debounce.
-- Pull-to-refresh.
-- Cache de imagens de favicon com `cached_network_image`.
-- Tratamento de erros de rede e timeout.
+- Flutter SDK instalado
+- Android Studio (para build Android) ou dispositivo Android com depuração USB
 
-## Fonte de dados
+## Como rodar
 
-As noticias sao carregadas da API publica do Hacker News (Algolia):
-
-- `https://hn.algolia.com/api/v1/search?tags=front_page`
-
-## Como executar
-
-1. Instalar dependencias:
-	- `flutter pub get`
-2. Rodar o app:
-	- `flutter run`
+1. Instalar dependências:
+	- flutter pub get
+2. Executar o app:
+	- flutter run
 3. Rodar testes:
-	- `flutter test`
+	- flutter test
 
-## Gerar APK Android (release)
+## Gerar APK (Android)
 
-1. Via script do projeto (recomendado):
-	- `powershell -ExecutionPolicy Bypass -File scripts/build_apk.ps1`
-2. Via comando direto:
-	- `flutter build apk --release`
+1. Usar script do projeto:
+	- powershell -ExecutionPolicy Bypass -File scripts/build_apk.ps1
+2. O APK será gerado em:
+	- build/app/outputs/flutter-apk/app-release.apk
 
-O APK final fica em:
+## Instalar no celular via USB
 
-- `build/app/outputs/flutter-apk/app-release.apk`
-
-## Estrutura principal
-
-- `lib/main.dart`: app, modelo, repositorio, controller e UI.
-- `test/widget_test.dart`: teste smoke com repositorio fake (sem internet).
+1. Conecte o celular com depuração USB ativada.
+2. Verifique dispositivos:
+	- flutter devices
+3. Instale o APK:
+	- adb install -r build/app/outputs/flutter-apk/app-release.apk
