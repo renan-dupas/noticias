@@ -27,6 +27,17 @@ As noticias sao carregadas da API publica do Hacker News (Algolia):
 3. Rodar testes:
 	- `flutter test`
 
+## Gerar APK Android (release)
+
+1. Via script do projeto (recomendado):
+	- `powershell -ExecutionPolicy Bypass -File scripts/build_apk.ps1`
+2. Via comando direto:
+	- `flutter build apk --release`
+
+O APK final fica em:
+
+- `build/app/outputs/flutter-apk/app-release.apk`
+
 ## Estrutura principal
 
 - `lib/main.dart`: app, modelo, repositorio, controller e UI.
